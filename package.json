@@ -4,7 +4,7 @@
   "description": "Upload files to Slack from the CLI",
   "main": "lib/cli.js",
   "scripts": {
-    "compile": "babel src/cli.js --out-file lib/cli.js",
+    "compile": "cd src/ && babel ./**/*.js --out-dir ../lib/ && chmod 777 ../lib/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run compile && node lib/cli.js"
   },
