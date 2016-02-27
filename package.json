@@ -1,12 +1,13 @@
 {
   "name": "slackify",
-  "version": "0.0.1",
+  "version": "0.1.1",
   "description": "Upload files to Slack from the CLI",
   "main": "lib/cli.js",
   "scripts": {
-    "compile": "BABEL_DISABLE_CACHE=1 cd src/ && babel ./**/*.js --out-dir ../lib/ && chmod 777 ../lib/cli.js",
+    "compile": "BABEL_DISABLE_CACHE=1 cd src/ && babel ./**/*.js --out-dir ../lib",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run compile && node lib/cli.js"
+    "start": "npm run compile && node lib/cli.js",
+    "prepublish": "npm run compile"
   },
   "preferGlobal": true,
   "bin": {
