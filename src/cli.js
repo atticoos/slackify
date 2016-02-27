@@ -8,15 +8,16 @@ import * as Auth from './auth';
 import Slack from './client';
 
 var inputs = {
-  target: null,
   files: []
 };
 
 cli
   .version(pkg.version)
-  .arguments('[channel|user] [files...]', 'upload a file(s) to a channel or user')
-  .action((target, files) => {
-    inputs.target = target;
+  .arguments('[files]', 'upload a file(s) to a channel or user')
+  .option('-m --message <message>', 'a comment to add to the file')
+  .option('-c --channel <channel>', 'the channel to upload the file to')
+  .option('-u --user <user>', 'the user to send the file to')
+  .action((files) => {
     inputs.files = files;
   })
   .parse(process.argv);
@@ -32,7 +33,7 @@ invariant(
 );
 
 invariant(
-  !!inputs.target,
+  cli.user || cli.channel,
   'Please specify a target (channel or user) and a filename(s)'
 );
 invariant(
@@ -41,8 +42,20 @@ invariant(
 );
 
 const client = new Slack(Auth.getAccessToken());
+const agnosticClientUploader = client => (u, c) => {
+  return (file) => u ? client.uploadFileToUser(u, file) : client.uploadFileToChannel(c, file);
+};
+const clientUploader = agnosticClientUploader(client);
+const upload = clientUploader(cli.user, cli.channel);
 
-client.uploadFile(inputs.target, inputs.files[0])
+upload(inputs.files)
   .then(file => {
-    return client.commentOnFile(file.id, 'test');
-  });
+    if (cli.message) {
+      return client.commentOnFile(file.id, cli.message);
+    }
+    return file;
+  }).then(resp => {
+    console.log('uploaded!');
+  }).catch(error => {
+    console.error('error', error);
+  })

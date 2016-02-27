@@ -14,11 +14,11 @@ const validResponseParser = resp => {
 
 const normalizeFilename = filename => path.isAbsolute(filename) ? filename : path.join(process.cwd(), filename);
 
-const fileUploadPayload = (channel, filename) => ({
+const fileUploadPayload = (channels, filename) => ({
   file: fs.createReadStream(normalizeFilename(filename)),
+  title: filename,
   filename,
-  title: 'test',
-  channels: '#spam'
+  channels
 });
 
 class SlackClient {
@@ -27,8 +27,16 @@ class SlackClient {
     this.client = Promise.promisifyAll(new Slack(token));
   }
 
-  uploadFile (channel, filename) {
-    var payload = fileUploadPayload(channel, filename);
+  uploadFileToChannel(channel, filename) {
+    return this.uploadFile(`#${channel}`, filename);
+  }
+
+  uploadFileToUser(user, filename) {
+    return this.uploadFile(`@${user}`, filename);
+  }
+
+  uploadFile (target, filename) {
+    var payload = fileUploadPayload(target, filename);
     return this.client.apiAsync('files.upload', payload)
       .then(validResponseParser)
       .then(response => response.file);
