@@ -2,9 +2,15 @@
   "name": "slackify",
   "version": "0.0.1",
   "description": "Upload files to Slack from the CLI",
-  "main": "index.js",
+  "main": "lib/cli.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "compile": "babel src/cli.js --out-file lib/cli.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm run compile && node lib/cli.js"
+  },
+  "preferGlobal": true,
+  "bin": {
+    "slackify": "lib/cli.js"
   },
   "repository": {
     "type": "git",
@@ -17,6 +23,7 @@
   },
   "homepage": "https://github.com/ajwhite/slackify#readme",
   "dependencies": {
+    "commander": "^2.9.0",
     "slack-node": "^0.2.0"
   },
   "devDependencies": {
