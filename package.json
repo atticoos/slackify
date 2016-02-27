@@ -25,7 +25,9 @@
   "dependencies": {
     "bluebird": "^3.3.3",
     "commander": "^2.9.0",
-    "slack-node": "^0.2.0"
+    "request": "^2.69.0",
+    "slack-node": "^0.2.0",
+    "through2": "^2.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

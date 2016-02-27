@@ -1,52 +1,53 @@
 'use strict';
 
-import Slack from 'slack-node';
-import Promise from 'bluebird';
-import path from 'path';
-import fs from 'fs';
+import request from 'request';
+import invariant from './invariant';
+import {readFile, parseIntoLines} from './fileReader';
 
-const validResponseParser = resp => {
-  if (!resp.ok) {
-    throw resp.error;
+const BASE_URL = 'https://slack.com/api';
+
+const toChannelString = (channel, user) => {
+  var targets = [];
+  if (channel) {
+    targets.push(`#${channel}`);
   }
-  return resp;
-};
-
-const normalizeFilename = filename => path.isAbsolute(filename) ? filename : path.join(process.cwd(), filename);
-
-const fileUploadPayload = (channels, filename) => ({
-  file: fs.createReadStream(normalizeFilename(filename)),
-  title: filename,
-  filename,
-  channels
-});
-
-class SlackClient {
-
-  constructor (token) {
-    this.client = Promise.promisifyAll(new Slack(token));
+  if (user) {
+    targets.push(`@${user}`);
   }
-
-  uploadFileToChannel(channel, filename) {
-    return this.uploadFile(`#${channel}`, filename);
-  }
-
-  uploadFileToUser(user, filename) {
-    return this.uploadFile(`@${user}`, filename);
-  }
-
-  uploadFile (target, filename) {
-    var payload = fileUploadPayload(target, filename);
-    return this.client.apiAsync('files.upload', payload)
-      .then(validResponseParser)
-      .then(response => response.file);
-  }
-
-  commentOnFile (file, comment) {
-    return this.client.apiAsync('files.comments.add', {file, comment})
-      .then(validResponseParser)
-      .then(response => response.comment);
-  }
+  return targets.join(',');
 }
 
-export default SlackClient;
+const fileUploadPayload = (channels, filename, file, token) => ({
+  content: file,
+  title: filename,
+  filename,
+  channels,
+  token
+});
+
+
+export function uploadFile (token, filename, channel, user, message, lines) {
+  var file = readFile(filename);
+
+  if (lines.length > 1) {
+    invariant(
+      lines[1] > lines[0],
+      'Invalid lines'
+    );
+    file = parseIntoLines(file, lines[0], lines[1]);
+  }
+
+  var formData = fileUploadPayload(
+    toChannelString(channel, user),
+    filename,
+    file,
+    token
+  );
+
+  return request.post({
+    url: `${BASE_URL}/files.upload`,
+    formData
+  }, (err, resp) => {
+    console.log('uploaded', err, resp);
+  });
+}

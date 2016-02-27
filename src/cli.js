@@ -5,7 +5,7 @@ import cli from 'commander';
 import pkg from '../package.json';
 import invariant from './invariant';
 import * as Auth from './auth';
-import Slack from './client';
+import uploadFile from './client';
 
 var inputs = {
   files: []
@@ -44,21 +44,4 @@ invariant(
   'Please specify a filename(s)'
 );
 
-const client = new Slack(Auth.getAccessToken());
-const agnosticClientUploader = client => (u, c) => {
-  return (file) => u ? client.uploadFileToUser(u, file) : client.uploadFileToChannel(c, file);
-};
-const clientUploader = agnosticClientUploader(client);
-const upload = clientUploader(cli.user, cli.channel);
-
-upload(inputs.files)
-  .then(file => {
-    if (cli.message) {
-      return client.commentOnFile(file.id, cli.message);
-    }
-    return file;
-  }).then(resp => {
-    console.log('uploaded!');
-  }).catch(error => {
-    console.error('error', error);
-  })
+interact(Auth.getAccessToken(), inputs.files, cli.channel, cli.user, cli.message, cli.lines);
