@@ -15,5 +15,14 @@
   "bugs": {
     "url": "https://github.com/ajwhite/slackify/issues"
   },
-  "homepage": "https://github.com/ajwhite/slackify#readme"
+  "homepage": "https://github.com/ajwhite/slackify#readme",
+  "dependencies": {
+    "slack-node": "^0.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.5.1",
+    "babel-core": "^6.5.2",
+    "babel-plugin-add-module-exports": "^0.1.2",
+    "babel-preset-es2015": "^6.5.0"
+  }
 }
