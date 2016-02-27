@@ -14,6 +14,7 @@ var inputs = {
 };
 
 const lineParser = lines => lines.split('..').map(Number);
+const getAccessToken = () => process.env.SLACKIFY_TOKEN || Cli.token;
 
 Cli
   .version(pkg.version)
@@ -22,19 +23,15 @@ Cli
   .option('-c --channel <channel>', 'the channel to upload the file to')
   .option('-u --user <user>', 'the user to send the file to')
   .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
+  .option('-t --token <token>', 'slack token')
   .action((files) => {
     inputs.files = files;
   })
   .parse(process.argv);
 
 invariant(
-  Auth.hasAccessTokenFile(),
-  'Please create a .slackify file in your home directory with an access token'
-);
-
-invariant(
-  Auth.getAccessToken(),
-  'Please provide an access token in your .slackify file'
+  getAccessToken(),
+  'Please add SLACKIFY_TOKEN environment variable or provide it as an argument -t --token'
 );
 
 invariant(
@@ -46,21 +43,31 @@ invariant(
   'Please specify a filename(s)'
 );
 
-const commentUploader = (token, comment) => (err, resp) => {
-  if (comment && !err) {
+const uploadCompleteHandler = (token, comment) => (err, resp) => {
+  if (err || !resp.ok) {
+    if (resp.error === 'invalid_auth') {
+      console.error('An invalid access token was provided');
+    } else {
+      console.error('Unable to upload your file for reason:', resp.error);
+    }
+    return;
+  }
+
+  if (comment && !err && resp.ok) {
     attachCommentToFile(token, resp.file.id, comment);
   }
+  console.log('Upload & complete!');
 };
 
 
 uploadFile(
-  Auth.getAccessToken(),
+  getAccessToken(),
   inputs.files,
   Cli.channel,
   Cli.user,
   Cli.message,
   Cli.lines,
-  commentUploader(Auth.getAccessToken(), Cli.message)
+  uploadCompleteHandler(getAccessToken(), Cli.message)
 ).on('data', function (chunk) {
   progressBar = progressBar || new ProgressBar('Uploading... [:bar] :percent :etas', {
     complete: '=',
