@@ -4,6 +4,7 @@
 import cli from 'commander';
 import pkg from '../package.json';
 import invariant from './invariant';
+import * as Auth from './auth';
 
 var inputs = {
   target: null,
@@ -18,6 +19,16 @@ cli
     inputs.files = files;
   })
   .parse(process.argv);
+
+invariant(
+  Auth.hasAccessTokenFile(),
+  'Please create a .slackify file in your home directory with an access token'
+);
+
+invariant(
+  Auth.getAccessToken(),
+  'Please provide an access token in your .slackify file'
+);
 
 invariant(
   !!inputs.target,
