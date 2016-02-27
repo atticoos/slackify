@@ -6,8 +6,9 @@ import ProgressBar from 'progress';
 import pkg from '../package.json';
 import invariant from './invariant';
 import * as Auth from './auth';
-import {uploadFile} from './client';
+import {uploadFile, attachCommentToFile} from './client';
 
+var progressBar;
 var inputs = {
   files: []
 };
@@ -45,18 +46,29 @@ invariant(
   'Please specify a filename(s)'
 );
 
+const commentUploader = (token, comment) => (err, resp) => {
+  if (comment && !err) {
+    attachCommentToFile(token, resp.file.id, comment);
+  }
+};
 
-var progressBar;
-uploadFile(Auth.getAccessToken(), inputs.files, Cli.channel, Cli.user, Cli.message, Cli.lines)
-  .on('data', function (chunk) {
-    progressBar = progressBar || new ProgressBar('Uploading... [:bar] :percent :etas', {
-      complete: '=',
-      incomplete: ' ',
-      width: 25,
-      total: parseInt(this.response.headers['content-length'])
-    });
-    progressBar.tick(chunk.length);
-  })
-  .on('close', (err) => {
-    progressBar.tick(progressBar.total - progressBar.current);
+
+uploadFile(
+  Auth.getAccessToken(),
+  inputs.files,
+  Cli.channel,
+  Cli.user,
+  Cli.message,
+  Cli.lines,
+  commentUploader(Auth.getAccessToken(), Cli.message)
+).on('data', function (chunk) {
+  progressBar = progressBar || new ProgressBar('Uploading... [:bar] :percent :etas', {
+    complete: '=',
+    incomplete: ' ',
+    width: 25,
+    total: parseInt(this.response.headers['content-length'])
   });
+  progressBar.tick(chunk.length);
+}).on('end', function (err, x) {
+  progressBar.tick(progressBar.total - progressBar.current);
+});
