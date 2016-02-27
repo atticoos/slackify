@@ -1,5 +1,8 @@
 'use strict';
 
+// create developer tokens
+// https://api.slack.com/docs/oauth-test-tokens
+
 import fs from 'fs';
 
 const HOME = process.env[process.platform === 'win32' ? 'USERPROFILE' : 'HOME'];

@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/ajwhite/slackify#readme",
   "dependencies": {
+    "bluebird": "^3.3.3",
     "commander": "^2.9.0",
     "slack-node": "^0.2.0"
   },

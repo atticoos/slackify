@@ -5,6 +5,7 @@ import cli from 'commander';
 import pkg from '../package.json';
 import invariant from './invariant';
 import * as Auth from './auth';
+import Slack from './client';
 
 var inputs = {
   target: null,
@@ -38,3 +39,10 @@ invariant(
   inputs.files.length > 0,
   'Please specify a filename(s)'
 );
+
+const client = new Slack(Auth.getAccessToken());
+
+client.uploadFile(inputs.target, inputs.files[0])
+  .then(file => {
+    return client.commentOnFile(file.id, 'test');
+  });
