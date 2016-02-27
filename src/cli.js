@@ -11,12 +11,15 @@ var inputs = {
   files: []
 };
 
+const lineParser = lines => lines.split('..').map(Number);
+
 cli
   .version(pkg.version)
   .arguments('[files]', 'upload a file(s) to a channel or user')
   .option('-m --message <message>', 'a comment to add to the file')
   .option('-c --channel <channel>', 'the channel to upload the file to')
   .option('-u --user <user>', 'the user to send the file to')
+  .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
   .action((files) => {
     inputs.files = files;
   })
