@@ -1,0 +1,19 @@
+{
+  "name": "slackify",
+  "version": "0.0.1",
+  "description": "Upload files to Slack from the CLI",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajwhite/slackify.git"
+  },
+  "author": "Atticus White <contact@atticuswhite.com> (http://atticuswhite.com/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ajwhite/slackify/issues"
+  },
+  "homepage": "https://github.com/ajwhite/slackify#readme"
+}
