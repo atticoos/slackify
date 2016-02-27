@@ -29,7 +29,7 @@ const fileUploadPayload = (channels, filename, file, token) => ({
 export function uploadFile (token, filename, channel, user, message, lines) {
   var file = readFile(filename);
 
-  if (lines.length > 1) {
+  if (lines && lines.length > 1) {
     invariant(
       lines[1] > lines[0],
       'Invalid lines'
@@ -47,7 +47,5 @@ export function uploadFile (token, filename, channel, user, message, lines) {
   return request.post({
     url: `${BASE_URL}/files.upload`,
     formData
-  }, (err, resp) => {
-    console.log('uploaded', err, resp);
   });
 }

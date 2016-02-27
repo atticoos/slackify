@@ -4,7 +4,7 @@
   "description": "Upload files to Slack from the CLI",
   "main": "lib/cli.js",
   "scripts": {
-    "compile": "cd src/ && babel ./**/*.js --out-dir ../lib/ && chmod 777 ../lib/cli.js",
+    "compile": "BABEL_DISABLE_CACHE=1 cd src/ && babel ./**/*.js --out-dir ../lib/ && chmod 777 ../lib/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run compile && node lib/cli.js"
   },
@@ -25,9 +25,7 @@
   "dependencies": {
     "bluebird": "^3.3.3",
     "commander": "^2.9.0",
-    "request": "^2.69.0",
-    "slack-node": "^0.2.0",
-    "through2": "^2.0.1"
+    "request": "^2.69.0"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

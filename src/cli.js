@@ -1,11 +1,12 @@
 #! /usr/bin/env node
 'use strict';
 
-import cli from 'commander';
+import Cli from 'commander';
+import ProgressBar from 'progress';
 import pkg from '../package.json';
 import invariant from './invariant';
 import * as Auth from './auth';
-import uploadFile from './client';
+import {uploadFile} from './client';
 
 var inputs = {
   files: []
@@ -13,7 +14,7 @@ var inputs = {
 
 const lineParser = lines => lines.split('..').map(Number);
 
-cli
+Cli
   .version(pkg.version)
   .arguments('[files]', 'upload a file(s) to a channel or user')
   .option('-m --message <message>', 'a comment to add to the file')
@@ -36,7 +37,7 @@ invariant(
 );
 
 invariant(
-  cli.user || cli.channel,
+  Cli.user || Cli.channel,
   'Please specify a target (channel or user) and a filename(s)'
 );
 invariant(
@@ -44,4 +45,18 @@ invariant(
   'Please specify a filename(s)'
 );
 
-interact(Auth.getAccessToken(), inputs.files, cli.channel, cli.user, cli.message, cli.lines);
+
+var progressBar;
+uploadFile(Auth.getAccessToken(), inputs.files, Cli.channel, Cli.user, Cli.message, Cli.lines)
+  .on('data', function (chunk) {
+    progressBar = progressBar || new ProgressBar('Uploading... [:bar] :percent :etas', {
+      complete: '=',
+      incomplete: ' ',
+      width: 25,
+      total: parseInt(this.response.headers['content-length'])
+    });
+    progressBar.tick(chunk.length);
+  })
+  .on('close', (err) => {
+    progressBar.tick(progressBar.total - progressBar.current);
+  });
