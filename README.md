@@ -38,3 +38,18 @@ Or include it as an option when using slackify `slackify -t xoxp-xxxxxx-xxxxxx-x
     -t --token <token>      slack token
     -tl --tail <tail>       tail of a file
 ```
+
+#### Upload specific lines of a file
+```
+slackify file channel --lines 10..30
+```
+
+#### Upload the tail of a file
+```
+slackify error_log support --tail 50
+```
+
+#### Add a comment with your file
+```
+slackify file development -m 'uploaded from slackify'
+```
