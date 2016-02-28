@@ -28,6 +28,8 @@
     "chalk": "^1.1.1",
     "cli-spinner": "^0.2.4",
     "commander": "^2.9.0",
+    "form-data": "^1.0.0-rc3",
+    "request": "^2.69.0",
     "request-promise": "^2.0.1"
   },
   "devDependencies": {

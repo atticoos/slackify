@@ -10,6 +10,8 @@ const normalizeFilename = filename => path.isAbsolute(filename) ? filename : pat
 
 export const readFile = filename => asyncFs.readFileAsync(normalizeFilename(filename));
 
+export const getReadableFileStream = filename => fs.createReadStream(normalizeFilename(filename));
+
 export const parseIntoLines = (file, start, end) => {
   return file
     .toString()
