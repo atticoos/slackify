@@ -28,7 +28,7 @@ const toChannelString = (channel, user) => {
   return targets.join(',');
 }
 
-export function uploadFile (token, file, filename = 'Untitled', channel, user, message = '', lines, tail) {
+export function uploadFile (token, file, filename = 'Untitled', channel, user, message = '') {
   var formData = {
     content: file,
     title: filename,

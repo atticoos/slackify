@@ -79,20 +79,11 @@ const fileReader = (file, lines, tail) => readFile(file).then(file => {
 });
 
 
-Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`)
+Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`);
 spinner.start();
 
 getInputSource(fileName).then(fileContent => {
-  return uploadFile(
-    getAccessToken(),
-    fileContent,
-    fileName,
-    channel,
-    Cli.user,
-    Cli.message,
-    Cli.lines,
-    Cli.tail
-  )
+  return uploadFile(getAccessToken(), fileContent, fileName, channel, Cli.user, Cli.message);
 }).finally(() => {
   spinner.stop(true);
 }).then(() => {
