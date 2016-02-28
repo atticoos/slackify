@@ -39,6 +39,7 @@ invariant(
   Cli.user || Cli.channel,
   'Please specify a target (channel or user) and a filename'
 );
+
 invariant(
   !!file,
   'Please specify a filename'
@@ -55,7 +56,7 @@ uploadFile(
   Cli.lines
 ).then((file) => {
   if (Cli.message) {
-    return attachCommentToFile(token, file.id, Cli.message);
+    return attachCommentToFile(getAccessToken(), file.id, Cli.message);
   }
 }).finally(() => {
   spinner.stop(true);
