@@ -83,7 +83,7 @@ Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.u
 spinner.start();
 
 getInputSource(fileName).then(fileContent => {
-  uploadFile(
+  return uploadFile(
     getAccessToken(),
     fileContent,
     fileName,
@@ -92,11 +92,11 @@ getInputSource(fileName).then(fileContent => {
     Cli.message,
     Cli.lines,
     Cli.tail
-  ).finally(() => {
-    spinner.stop(true);
-  }).then(() => {
-    Print.success('Upload complete!');
-  }).catch((error) => {
-    Print.error('Upload failed with error', error);
-  });
+  )
+}).finally(() => {
+  spinner.stop(true);
+}).then(() => {
+  Print.success('Upload complete!');
+}).catch((error) => {
+  Print.error('Upload failed with error', error);
 });
