@@ -2,7 +2,11 @@
 
 import request from 'request-promise';
 import invariant from './invariant';
-import {readFile, parseIntoLines} from './fileReader';
+import {
+  readFile,
+  parseIntoLines,
+  parseTail
+} from './fileReader';
 
 const BASE_URL = 'https://slack.com/api';
 const rpcResponseHandler = response => {
@@ -31,7 +35,7 @@ const fileUploadPayload = (channels, filename, file, token) => ({
   token
 });
 
-export function uploadFile (token, filename, channel, user, message, lines, onComplete = () => {}) {
+export function uploadFile (token, filename, channel, user, message, lines, tail) {
   return readFile(filename).then(file => {
     if (lines && lines.length > 1) {
       invariant(
@@ -39,6 +43,10 @@ export function uploadFile (token, filename, channel, user, message, lines, onCo
         'Invalid lines'
       );
       file = parseIntoLines(file, lines[0], lines[1]);
+    }
+
+    if (tail) {
+      file = parseTail(file, tail);
     }
 
     var formData = fileUploadPayload(

@@ -25,6 +25,7 @@ Cli
   .option('-u --user <user>', 'the user to send the file to')
   .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
   .option('-t --token <token>', 'slack token')
+  .option('-tl --tail <tail>', 'tail of a file', Number)
   .action((filename) => {
     file = filename;
   })
@@ -53,7 +54,8 @@ uploadFile(
   Cli.channel,
   Cli.user,
   Cli.message,
-  Cli.lines
+  Cli.lines,
+  Cli.tail
 ).then((file) => {
   if (Cli.message) {
     return attachCommentToFile(getAccessToken(), file.id, Cli.message);

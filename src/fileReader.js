@@ -17,3 +17,10 @@ export const parseIntoLines = (file, start, end) => {
     .slice(start - 1, end - 1)
     .join('\n')
 };
+
+export const parseTail = (file, tail) => {
+  var contents = file.toString().split('\n');
+  return contents
+    .slice(contents.length - tail - 1)
+    .join('\n');
+}
