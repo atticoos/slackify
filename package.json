@@ -5,6 +5,7 @@
   "main": "lib/cli.js",
   "scripts": {
     "compile": "BABEL_DISABLE_CACHE=1 cd src/ && babel ./**/*.js --out-dir ../lib",
+    "build": "npm run compile && chmod 777 ./lib/cli.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npm run compile && node lib/cli.js",
     "prepublish": "npm run compile"
@@ -24,9 +25,9 @@
   "homepage": "https://github.com/ajwhite/slackify#readme",
   "dependencies": {
     "bluebird": "^3.3.3",
+    "cli-spinner": "^0.2.4",
     "commander": "^2.9.0",
-    "progress": "^1.1.8",
-    "request": "^2.69.0"
+    "request-promise": "^2.0.1"
   },
   "devDependencies": {
     "babel-cli": "^6.5.1",

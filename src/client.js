@@ -1,12 +1,16 @@
 'use strict';
 
-import request from 'request';
+import request from 'request-promise';
 import invariant from './invariant';
 import {readFile, parseIntoLines} from './fileReader';
 
 const BASE_URL = 'https://slack.com/api';
-const responseParser = response => response && JSON.parse(response.toJSON().body);
-const responseHandler = onComplete => (err, response) => onComplete(err, responseParser(response));
+const rpcResponseHandler = response => {
+  if (response.ok) {
+    return response;
+  }
+  throw response.error;
+}
 
 const toChannelString = (channel, user) => {
   var targets = [];
@@ -48,7 +52,10 @@ export function uploadFile (token, filename, channel, user, message, lines, onCo
   return request.post({
     url: `${BASE_URL}/files.upload`,
     formData
-  }, responseHandler(onComplete));
+  })
+  .then(JSON.parse)
+  .then(rpcResponseHandler)
+  .then(response => response.file);
 }
 
 export function attachCommentToFile (token, file, comment, onComplete = () => {}) {
@@ -60,5 +67,8 @@ export function attachCommentToFile (token, file, comment, onComplete = () => {}
   request.post({
     url: `${BASE_URL}/files.comments.add`,
     formData
-  }, responseHandler(onComplete));
+  })
+  .then(JSON.parse)
+  .then(rpcResponseHandler)
+  .then(response => response.comment);
 }
