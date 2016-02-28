@@ -4,6 +4,7 @@
 import Cli from 'commander';
 import pkg from '../package.json';
 import invariant from './invariant';
+import * as Print from './print';
 import {uploadFile, attachCommentToFile} from './client';
 import {Spinner} from 'cli-spinner';
 
@@ -57,7 +58,7 @@ uploadFile(
 }).finally(() => {
   spinner.stop(true);
 }).then(() => {
-  console.log('Upload complete!');
+  Print.success('Upload complete!');
 }).catch((error) => {
-  console.log('Upload failed with error', error);
+  Print.error('Upload failed with error', error);
 });
