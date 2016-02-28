@@ -41,6 +41,7 @@ Cli
     } else {
       // stdin pipe, arg1=channel
       channel = arg1;
+      fileName = 'stdin';
     }
   })
   .parse(process.argv);
@@ -56,31 +57,26 @@ invariant(
 );
 
 invariant(
-  fileName || !process.stdin.isTTY,
+  !process.stdin.isTTY || fileName,
   'Please specify a filename'
 );
 
+invariant(
+  !Cli.lines || Cli.lines[1] > Cli.lines[0],
+  'Lines must be a valid range'
+);
+
+const getInputSource = filename => process.stdin.isTTY ? fileReader(fileName, Cli.lines, Cli.tail) : readStdInput();
 
 const fileReader = (file, lines, tail) => readFile(file).then(file => {
   if (Cli.lines && Cli.lines.length > 1) {
-    invariant(
-      lines[1] > lines[0],
-      'Lines must be a valid range'
-    );
     return parseIntoLines(file, lines[0], lines[1]);
   }
   if (tail) {
     return parseTail(file, tail);
   }
   return file;
-})
-
-function getInputSource (fileName) {
-  if (process.stdin.isTTY) {
-    return fileReader(fileName, Cli.lines, Cli.tail);
-  }
-  return readStdInput();
-}
+});
 
 
 Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`)
