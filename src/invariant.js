@@ -1,8 +1,10 @@
 'use strict';
 
+import * as Print from './print';
+
 export default function invariant(predicate, message) {
   if (!predicate) {
-    console.error(message);
+    Print.error(message);
     process.exit(1);
   }
 }
