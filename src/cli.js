@@ -79,7 +79,7 @@ const fileReader = (file, lines, tail) => readFile(file).then(file => {
 });
 
 
-Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`);
+Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`)
 spinner.start();
 
 getInputSource(fileName).then(fileContent => {

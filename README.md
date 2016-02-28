@@ -6,7 +6,13 @@ Upload files to Slack from your CLI
 slackify file channel
 ```
 
-![slackify](https://cloud.githubusercontent.com/assets/656630/13376874/820e819e-dd94-11e5-932e-156234c014e9.gif)
+Or pipe in `stdin`
+```sh
+ps -a | slackify channel
+```
+
+![slackify](https://cloud.githubusercontent.com/assets/656630/13382387/5d529748-de41-11e5-9b49-f42b06773b2f.gif)
+
 
 
 ### Installation
@@ -37,6 +43,16 @@ Or include it as an option when using slackify `slackify -t xoxp-xxxxxx-xxxxxx-x
     -l --lines <l1>..<l2>   upload specific lines in a file
     -t --token <token>      slack token
     -tl --tail <tail>       tail of a file
+```
+
+#### Send a file to a user
+```
+slackify file -u user
+```
+
+#### Pipe stdin to a user
+```
+ps -a | slackify -u user
 ```
 
 #### Upload specific lines of a file
