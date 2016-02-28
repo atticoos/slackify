@@ -9,6 +9,7 @@ import {
 } from './fileReader';
 
 const BASE_URL = 'https://slack.com/api';
+
 const rpcResponseHandler = response => {
   if (response.ok) {
     return response;
@@ -27,43 +28,21 @@ const toChannelString = (channel, user) => {
   return targets.join(',');
 }
 
-const fileUploadPayload = (channels, filename, file, message, token) => ({
-  content: file,
-  title: filename,
-  initial_comment: message,
-  filename,
-  channels,
-  token
-});
+export function uploadFile (token, file, filename = 'Untitled', channel, user, message = '') {
+  var formData = {
+    content: file,
+    title: filename,
+    initial_comment: message,
+    channels: toChannelString(channel, user),
+    filename,
+    token
+  };
 
-export function uploadFile (token, filename, channel, user, message = '', lines, tail) {
-  return readFile(filename).then(file => {
-    if (lines && lines.length > 1) {
-      invariant(
-        lines[1] > lines[0],
-        'Invalid lines'
-      );
-      file = parseIntoLines(file, lines[0], lines[1]);
-    }
-
-    if (tail) {
-      file = parseTail(file, tail);
-    }
-
-    var formData = fileUploadPayload(
-      toChannelString(channel, user),
-      filename,
-      file,
-      message,
-      token
-    );
-
-    return request.post({
-      url: `${BASE_URL}/files.upload`,
-      formData
-    })
-    .then(JSON.parse)
-    .then(rpcResponseHandler)
-    .then(response => response.file)
-  });
+  return request.post({
+    url: `${BASE_URL}/files.upload`,
+    formData
+  })
+  .then(JSON.parse)
+  .then(rpcResponseHandler)
+  .then(response => response.file)
 }

@@ -8,12 +8,18 @@ import invariant from './invariant';
 import * as Print from './print';
 import {uploadFile} from './client';
 import {Spinner} from 'cli-spinner';
+import {
+  readFile,
+  readStdInput,
+  parseIntoLines,
+  parseTail
+} from './fileReader';
 
 const lineParser = lines => lines.split('..').map(Number);
 const getAccessToken = () => Cli.token || process.env.SLACKIFY_TOKEN;
 
 var spinner = new Spinner('Uploading..');
-var file;
+var fileName;
 var channel;
 
 spinner.setSpinnerString(Spinner.spinners[process.platform === 'win32' ? 0 : 19]);
@@ -27,9 +33,16 @@ Cli
   .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
   .option('-t --token <token>', 'slack token')
   .option('-tl --tail <tail>', 'tail of a file', Number)
-  .action((fileName, channelName) => {
-    file = fileName;
-    channel = channelName;
+  .action((arg1, arg2) => {
+    if (process.stdin.isTTY) {
+      // normal CLI call, arg1=file, arg2=channel
+      fileName = arg1;
+      channel = arg2
+    } else {
+      // stdin pipe, arg1=channel
+      channel = arg1;
+      fileName = 'stdin';
+    }
   })
   .parse(process.argv);
 
@@ -44,21 +57,34 @@ invariant(
 );
 
 invariant(
-  !!file,
+  !process.stdin.isTTY || fileName,
   'Please specify a filename'
 );
 
-Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(channel || Cli.user)}`)
+invariant(
+  !Cli.lines || Cli.lines[1] > Cli.lines[0],
+  'Lines must be a valid range'
+);
+
+const getInputSource = filename => process.stdin.isTTY ? fileReader(fileName, Cli.lines, Cli.tail) : readStdInput();
+
+const fileReader = (file, lines, tail) => readFile(file).then(file => {
+  if (Cli.lines && Cli.lines.length > 1) {
+    return parseIntoLines(file, lines[0], lines[1]);
+  }
+  if (tail) {
+    return parseTail(file, tail);
+  }
+  return file;
+});
+
+
+Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`)
 spinner.start();
-uploadFile(
-  getAccessToken(),
-  file,
-  channel,
-  Cli.user,
-  Cli.message,
-  Cli.lines,
-  Cli.tail
-).finally(() => {
+
+getInputSource(fileName).then(fileContent => {
+  return uploadFile(getAccessToken(), fileContent, fileName, channel, Cli.user, Cli.message);
+}).finally(() => {
   spinner.stop(true);
 }).then(() => {
   Print.success('Upload complete!');
