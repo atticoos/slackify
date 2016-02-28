@@ -19,7 +19,7 @@ const lineParser = lines => lines.split('..').map(Number);
 const getAccessToken = () => Cli.token || process.env.SLACKIFY_TOKEN;
 
 var spinner = new Spinner('Uploading..');
-var file;
+var fileName;
 var channel;
 
 spinner.setSpinnerString(Spinner.spinners[process.platform === 'win32' ? 0 : 19]);
@@ -33,9 +33,15 @@ Cli
   .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
   .option('-t --token <token>', 'slack token')
   .option('-tl --tail <tail>', 'tail of a file', Number)
-  .action((fileName, channelName) => {
-    file = fileName;
-    channel = channelName;
+  .action((arg1, arg2) => {
+    if (process.stdin.isTTY) {
+      // normal CLI call, arg1=file, arg2=channel
+      fileName = arg1;
+      channel = arg2
+    } else {
+      // stdin pipe, arg1=channel
+      channel = arg1;
+    }
   })
   .parse(process.argv);
 
@@ -50,7 +56,7 @@ invariant(
 );
 
 invariant(
-  !!file,
+  fileName || !process.stdin.isTTY,
   'Please specify a filename'
 );
 
@@ -69,22 +75,22 @@ const fileReader = (file, lines, tail) => readFile(file).then(file => {
   return file;
 })
 
-function getInputSource () {
+function getInputSource (fileName) {
   if (process.stdin.isTTY) {
-    return fileReader(file, Cli.lines, Cli.tail);
+    return fileReader(fileName, Cli.lines, Cli.tail);
   }
   return readStdInput();
 }
 
 
-Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(channel || Cli.user)}`)
+Print.info(`Uploading ${chalk.white(fileName)} to ${chalk.white(channel || Cli.user)}`)
 spinner.start();
-getInputSource().then(fileObj => {
-  console.log('das file', fileObj);
+
+getInputSource(fileName).then(fileContent => {
   uploadFile(
     getAccessToken(),
-    fileObj,
-    file,
+    fileContent,
+    fileName,
     channel,
     Cli.user,
     Cli.message,

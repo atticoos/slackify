@@ -36,7 +36,7 @@ const fileUploadPayload = (channels, filename, file, message, token) => ({
   token
 });
 
-export function uploadFile (token, file, filename, channel, user, message = '', lines, tail) {
+export function uploadFile (token, file, filename = 'Untitled', channel, user, message = '', lines, tail) {
   // return readFile(filename).then(file => {
   //   if (lines && lines.length > 1) {
   //     invariant(
