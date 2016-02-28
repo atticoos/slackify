@@ -6,7 +6,7 @@ import pkg from '../package.json';
 import chalk from 'chalk';
 import invariant from './invariant';
 import * as Print from './print';
-import {uploadFile, attachCommentToFile} from './client';
+import {uploadFile} from './client';
 import {Spinner} from 'cli-spinner';
 
 const lineParser = lines => lines.split('..').map(Number);
@@ -58,11 +58,7 @@ uploadFile(
   Cli.message,
   Cli.lines,
   Cli.tail
-).then((file) => {
-  if (Cli.message) {
-    return attachCommentToFile(getAccessToken(), file.id, Cli.message);
-  }
-}).finally(() => {
+).finally(() => {
   spinner.stop(true);
 }).then(() => {
   Print.success('Upload complete!');

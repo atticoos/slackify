@@ -27,15 +27,16 @@ const toChannelString = (channel, user) => {
   return targets.join(',');
 }
 
-const fileUploadPayload = (channels, filename, file, token) => ({
+const fileUploadPayload = (channels, filename, file, message, token) => ({
   content: file,
   title: filename,
+  initial_comment: message,
   filename,
   channels,
   token
 });
 
-export function uploadFile (token, filename, channel, user, message, lines, tail) {
+export function uploadFile (token, filename, channel, user, message = '', lines, tail) {
   return readFile(filename).then(file => {
     if (lines && lines.length > 1) {
       invariant(
@@ -53,6 +54,7 @@ export function uploadFile (token, filename, channel, user, message, lines, tail
       toChannelString(channel, user),
       filename,
       file,
+      message,
       token
     );
 
@@ -64,19 +66,4 @@ export function uploadFile (token, filename, channel, user, message, lines, tail
     .then(rpcResponseHandler)
     .then(response => response.file)
   });
-}
-
-export function attachCommentToFile (token, file, comment, onComplete = () => {}) {
-  var formData = {
-    token,
-    file,
-    comment
-  };
-  request.post({
-    url: `${BASE_URL}/files.comments.add`,
-    formData
-  })
-  .then(JSON.parse)
-  .then(rpcResponseHandler)
-  .then(response => response.comment);
 }
