@@ -24,3 +24,14 @@ export const parseTail = (file, tail) => {
     .slice(contents.length - tail - 1)
     .join('\n');
 }
+
+export const readStdInput = () => new Promise((resolve, reject) => {
+  var data = '';
+  process.stdin.on('readable', () => {
+    var chunk;
+    while (chunk = process.stdin.read()) {
+      data += chunk;
+    }
+  });
+  process.stdin.on('end', () => resolve(data));
+});

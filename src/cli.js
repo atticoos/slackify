@@ -8,6 +8,12 @@ import invariant from './invariant';
 import * as Print from './print';
 import {uploadFile} from './client';
 import {Spinner} from 'cli-spinner';
+import {
+  readFile,
+  readStdInput,
+  parseIntoLines,
+  parseTail
+} from './fileReader';
 
 const lineParser = lines => lines.split('..').map(Number);
 const getAccessToken = () => Cli.token || process.env.SLACKIFY_TOKEN;
@@ -48,20 +54,47 @@ invariant(
   'Please specify a filename'
 );
 
+
+const fileReader = (file, lines, tail) => readFile(file).then(file => {
+  if (Cli.lines && Cli.lines.length > 1) {
+    invariant(
+      lines[1] > lines[0],
+      'Lines must be a valid range'
+    );
+    return parseIntoLines(file, lines[0], lines[1]);
+  }
+  if (tail) {
+    return parseTail(file, tail);
+  }
+  return file;
+})
+
+function getInputSource () {
+  if (process.stdin.isTTY) {
+    return fileReader(file, Cli.lines, Cli.tail);
+  }
+  return readStdInput();
+}
+
+
 Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(channel || Cli.user)}`)
 spinner.start();
-uploadFile(
-  getAccessToken(),
-  file,
-  channel,
-  Cli.user,
-  Cli.message,
-  Cli.lines,
-  Cli.tail
-).finally(() => {
-  spinner.stop(true);
-}).then(() => {
-  Print.success('Upload complete!');
-}).catch((error) => {
-  Print.error('Upload failed with error', error);
+getInputSource().then(fileObj => {
+  console.log('das file', fileObj);
+  uploadFile(
+    getAccessToken(),
+    fileObj,
+    file,
+    channel,
+    Cli.user,
+    Cli.message,
+    Cli.lines,
+    Cli.tail
+  ).finally(() => {
+    spinner.stop(true);
+  }).then(() => {
+    Print.success('Upload complete!');
+  }).catch((error) => {
+    Print.error('Upload failed with error', error);
+  });
 });

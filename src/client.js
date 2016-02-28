@@ -36,19 +36,19 @@ const fileUploadPayload = (channels, filename, file, message, token) => ({
   token
 });
 
-export function uploadFile (token, filename, channel, user, message = '', lines, tail) {
-  return readFile(filename).then(file => {
-    if (lines && lines.length > 1) {
-      invariant(
-        lines[1] > lines[0],
-        'Invalid lines'
-      );
-      file = parseIntoLines(file, lines[0], lines[1]);
-    }
-
-    if (tail) {
-      file = parseTail(file, tail);
-    }
+export function uploadFile (token, file, filename, channel, user, message = '', lines, tail) {
+  // return readFile(filename).then(file => {
+  //   if (lines && lines.length > 1) {
+  //     invariant(
+  //       lines[1] > lines[0],
+  //       'Invalid lines'
+  //     );
+  //     file = parseIntoLines(file, lines[0], lines[1]);
+  //   }
+  //
+  //   if (tail) {
+  //     file = parseTail(file, tail);
+  //   }
 
     var formData = fileUploadPayload(
       toChannelString(channel, user),
@@ -65,5 +65,5 @@ export function uploadFile (token, filename, channel, user, message = '', lines,
     .then(JSON.parse)
     .then(rpcResponseHandler)
     .then(response => response.file)
-  });
+  // });
 }
