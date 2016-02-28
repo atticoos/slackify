@@ -1,6 +1,6 @@
 {
   "name": "slackify",
-  "version": "0.1.1",
+  "version": "0.1.9",
   "description": "Upload files to Slack from the CLI",
   "main": "lib/cli.js",
   "scripts": {
@@ -9,7 +9,6 @@
     "start": "npm run compile && node lib/cli.js",
     "prepublish": "npm run compile"
   },
-  "preferGlobal": true,
   "bin": {
     "slackify": "lib/cli.js"
   },
@@ -26,6 +25,7 @@
   "dependencies": {
     "bluebird": "^3.3.3",
     "commander": "^2.9.0",
+    "progress": "^1.1.8",
     "request": "^2.69.0"
   },
   "devDependencies": {

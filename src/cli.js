@@ -5,7 +5,6 @@ import Cli from 'commander';
 import ProgressBar from 'progress';
 import pkg from '../package.json';
 import invariant from './invariant';
-import * as Auth from './auth';
 import {uploadFile, attachCommentToFile} from './client';
 
 var progressBar;

@@ -2,7 +2,6 @@
 
 import fs from 'fs';
 import path from 'path';
-import through2 from 'through2';
 
 const normalizeFilename = filename => path.isAbsolute(filename) ? filename : path.join(process.cwd(), filename);
 
