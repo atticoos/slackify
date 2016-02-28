@@ -56,11 +56,7 @@ uploadFile(
   Cli.message,
   Cli.lines,
   Cli.tail
-).then((file) => {
-  if (Cli.message) {
-    return attachCommentToFile(getAccessToken(), file.id, Cli.message);
-  }
-}).finally(() => {
+).finally(() => {
   spinner.stop(true);
 }).then(() => {
   Print.success('Upload complete!');
