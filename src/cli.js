@@ -3,6 +3,7 @@
 
 import Cli from 'commander';
 import pkg from '../package.json';
+import chalk from 'chalk';
 import invariant from './invariant';
 import * as Print from './print';
 import {uploadFile, attachCommentToFile} from './client';
@@ -43,6 +44,7 @@ invariant(
   'Please specify a filename'
 );
 
+Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(Cli.user || Cli.channel)}`)
 spinner.start();
 uploadFile(
   getAccessToken(),
