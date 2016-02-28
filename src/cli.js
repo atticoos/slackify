@@ -14,20 +14,22 @@ const getAccessToken = () => Cli.token || process.env.SLACKIFY_TOKEN;
 
 var spinner = new Spinner('Uploading..');
 var file;
+var channel;
 
 spinner.setSpinnerString(Spinner.spinners[process.platform === 'win32' ? 0 : 19]);
 
 Cli
   .version(pkg.version)
   .arguments('[file]', 'upload a file to a channel or user')
+  .arguments('[channel]', 'the channel to upload to')
   .option('-m --message <message>', 'a comment to add to the file')
-  .option('-c --channel <channel>', 'the channel to upload the file to')
   .option('-u --user <user>', 'the user to send the file to')
   .option('-l --lines <l1>..<l2>', 'upload specific lines in a file', lineParser)
   .option('-t --token <token>', 'slack token')
   .option('-tl --tail <tail>', 'tail of a file', Number)
-  .action((filename) => {
-    file = filename;
+  .action((fileName, channelName) => {
+    file = fileName;
+    channel = channelName;
   })
   .parse(process.argv);
 
@@ -37,7 +39,7 @@ invariant(
 );
 
 invariant(
-  Cli.user || Cli.channel,
+  channel || Cli.user,
   'Please specify a target (channel or user) and a filename'
 );
 
@@ -46,12 +48,12 @@ invariant(
   'Please specify a filename'
 );
 
-Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(Cli.user || Cli.channel)}`)
+Print.info(`Uploading ${chalk.white(file)} to ${chalk.white(channel || Cli.user)}`)
 spinner.start();
 uploadFile(
   getAccessToken(),
   file,
-  Cli.channel,
+  channel,
   Cli.user,
   Cli.message,
   Cli.lines,
