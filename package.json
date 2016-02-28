@@ -1,6 +1,6 @@
 {
   "name": "slackify",
-  "version": "0.1.9",
+  "version": "0.2.1",
   "description": "Upload files to Slack from the CLI",
   "main": "lib/cli.js",
   "scripts": {
