@@ -11,7 +11,7 @@ Or pipe in `stdin`
 ps -a | slackify channel
 ```
 
-![slackify](https://cloud.githubusercontent.com/assets/656630/13382387/5d529748-de41-11e5-9b49-f42b06773b2f.gif)
+![slackify](https://cloud.githubusercontent.com/assets/656630/13386068/3d2d1bd4-de76-11e5-9687-bc76a32ee96b.gif)
 
 
 
